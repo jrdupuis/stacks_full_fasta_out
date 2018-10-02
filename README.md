@@ -6,8 +6,8 @@ and as of 20180928 this option hasn't been implemented in Stacks v2.
 
 #### Requires:  
 
-* `populations.samples.fa`: standard fasta output from populations  
-* `../all_mach_20badsRmvd`: a popmap-style list of all individuals (can create from popmap with `awk '{print $1}'`)  
+* `populations.samples.fa`: standard fasta output from populations (ideally, already filtered).  
+* `../all_mach_20badsRmvd`: a popmap-style list of all individuals (can create from popmap with `awk '{print $1}'`).  
 * `Consensus.pl`: I use this to create strict IUPAC consensus sequences from all alleles per individual. Can use other utility, but this is what I had sitting around (source: [Joseph Hughes](https://github.com/josephhughes/Sequence-manipulation/blob/master/Consensus.pl)).  
 (Note, that many IUPAC consensus utilities, e.g. [Bio.motifs](http://biopython.org/DIST/docs/tutorial/Tutorial.html) in BioPython, do not create strict consensus sequences, but often use the rules to determine when IUPAC codes are introduced (e.g. [Cavener 1987](https://academic.oup.com/nar/article-lookup/doi/10.1093/nar/15.4.1353)).  
 * [parallel](https://www.gnu.org/software/bash/manual/html_node/GNU-Parallel.html)
