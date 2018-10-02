@@ -16,10 +16,10 @@ To be run on moana cluster, using 32 slots (`parallel -j`). Obviously, paths use
 
 ```
 #!/bin/sh
-#$-N fastaFAST
+#$-N fasta
 #$-S /bin/sh
-#$-o ./fastaFAST_$JOB_ID.out
-#$-e ./fastaFAST_$JOB_ID.err
+#$-o ./fasta_$JOB_ID.out
+#$-e ./fasta_$JOB_ID.err
 #$-q all.q
 #$-pe smp 32
 #$-cwd
@@ -27,11 +27,14 @@ To be run on moana cluster, using 32 slots (`parallel -j`). Obviously, paths use
 
 module load parallel
 
+stacks_fasta_input=populations.samples.fa
+popmap=../all_mach_20badsRmvd
+
 # make list of all "CLocus" IDs in stacks --fasta_samples output
-grep "CLocus" populations.samples.fa | awk 'BEGIN {FS="_"; OFS="_"} ; {print $1,$2}' | sed 's/^.//g; s/$/_/g' | sort -u > CLocus_list
+grep "CLocus" $stacks_fasta_input | awk 'BEGIN {FS="_"; OFS="_"} ; {print $1,$2}' | sed 's/^.//g; s/$/_/g' | sort -u > CLocus_list
 
 # creates fasta files for every possible CLocus x individual combination (creates empty files for non-existant combos)
-parallel -j 32 "grep {1} -A1 populations.samples.fa | grep {2} -A1 > {1}.{2}.fastaTEMP" :::: CLocus_list ../all_mach_20badsRmvd
+parallel -j 32 "grep {1} -A1 $stacks_fasta_input | grep {2} -A1 > {1}.{2}.fastaTEMP" :::: CLocus_list $popmap
 
 # removes empty fastaTEMP files
 ls ./*.fastaTEMP | parallel -j 32 "[ -s {} ] || rm {}" 
