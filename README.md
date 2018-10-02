@@ -12,9 +12,10 @@ and as of 20180928 this option hasn't been implemented in Stacks v2.
 (Note, that many IUPAC consensus utilities, e.g. [Bio.motifs](http://biopython.org/DIST/docs/tutorial/Tutorial.html) in BioPython, do not create strict consensus sequences, but often use the rules to determine when IUPAC codes are introduced (e.g. [Cavener 1987](https://academic.oup.com/nar/article-lookup/doi/10.1093/nar/15.4.1353)).  
 * [parallel](https://www.gnu.org/software/bash/manual/html_node/GNU-Parallel.html)
 
-To be run on moana cluster, using 32 slots (`parallel -j`).
+To be run on moana cluster, using 32 slots (`parallel -j`). Obviously, paths used below are not universal!
 
-```#!/bin/sh
+```
+#!/bin/sh
 #$-N fastaFAST
 #$-S /bin/sh
 #$-o ./fastaFAST_$JOB_ID.out
@@ -44,4 +45,10 @@ cat CLocus_list | parallel -j 32 "cat ./{}*.fastaTEMP.consensus > {}.combined.fa
 # clean up
 rm ./*.fastaTEMP
 rm ./*.fastaTEMP.consensus
-  ### could also use parallel to do these rm's from the CLocus_list file? Not hitting any arg list errors though ( -bash: /usr/bin/ls: Argument list too long)```
+  ### could also use parallel to do these rm's from the CLocus_list file? Not hitting any arg list errors though ( -bash: /usr/bin/ls: Argument list too long)
+```  
+
+#### Then...
+
+From the single CLocus fasta files, I like to use something like [Johan Nylander](https://github.com/nylander)'s [catfasta2phyml.pl](https://github.com/nylander/catfasta2phyml) to create a concatenated alignment of all loci.  
+`perl /home/jrdupuis/Random_scripts/catfasta2phyml.pl -c -s ./*.combined.fasta > mach_3070SNPs.phy`
