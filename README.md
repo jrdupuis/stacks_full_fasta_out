@@ -55,3 +55,9 @@ rm ./*.fastaTEMP.consensus
 
 From the single CLocus fasta files, I like to use something like [Johan Nylander](https://github.com/nylander)'s [catfasta2phyml.pl](https://github.com/nylander/catfasta2phyml) to create a concatenated alignment of all loci.  
 `perl /home/jrdupuis/Random_scripts/catfasta2phyml.pl -c -s ./*.combined.fasta > mach_3070SNPs.phy`
+
+#### other
+Make the combined.fasta files 1-liners:  
+`for f in ./*.combined.fasta; do sed -e 's/\(^>.*$\)/#\1#/' "$f" | tr -d "\r" | tr -d "\n" | sed -e 's/$/#/' | tr "#" "\n" | sed -e '/^$/d' > tmp && mv tmp "$f"; done`
+
+
