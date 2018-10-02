@@ -1,4 +1,4 @@
-### From https://github.com/nylander/catfasta2phyml on 17 October 2016
+### From https://github.com/josephhughes/Sequence-manipulation/blob/master/Consensus.pl on 17 October 2016
 
 #!/usr/bin/perl -w
 # A perlscript written by Joseph Hughes, University of Glasgow
