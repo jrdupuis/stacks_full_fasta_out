@@ -4,6 +4,8 @@ A bit of code to recreate the "--phylip_var_all" style output from stacks v1 wit
 This output includes SNPs of interest as well as flanking sequence of each catalog locus around the SNPs,
 and as of 20180928 this option hasn't been implemented in Stacks v2.  
 
+Note: quite slow and inefficient with large numbers of markers
+
 #### Requires:  
 
 * `populations.samples.fa`: standard fasta output from populations (ideally, already filtered).  
