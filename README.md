@@ -1,5 +1,3 @@
-### stacks_full_fasta_out  
-
 A bit of code to recreate the "--phylip_var_all" style output from stacks v1 with stacks v2 output. 
 This output includes SNPs of interest as well as flanking sequence of each catalog locus around the SNPs,
 and as of 20180928 this option hasn't been implemented in Stacks v2.  
@@ -12,6 +10,7 @@ and as of 20180928 this option hasn't been implemented in Stacks v2.
 * `../all_mach_20badsRmvd`: a popmap-style list of all individuals (can create from popmap with `awk '{print $1}'`).  
 * `Consensus.pl`: I use this to create strict IUPAC consensus sequences from all alleles per individual. Can use other utility, but this is what I had sitting around (source: [Joseph Hughes](https://github.com/josephhughes/Sequence-manipulation/blob/master/Consensus.pl)).  
 (Note, that many IUPAC consensus utilities, e.g. [Bio.motifs](http://biopython.org/DIST/docs/tutorial/Tutorial.html) in BioPython, do not create strict consensus sequences, but often use the rules to determine when IUPAC codes are introduced (e.g. [Cavener 1987](https://academic.oup.com/nar/article-lookup/doi/10.1093/nar/15.4.1353)).  
+* I use [Johan Nylander](https://github.com/nylander)'s [catfasta2phyml.pl](https://github.com/nylander/catfasta2phyml) to create a concatenated alignment of all loci. Again, something else could be used here.  
 * [parallel](https://www.gnu.org/software/bash/manual/html_node/GNU-Parallel.html)
 
 To be run on moana cluster, using 32 slots (`parallel -j`). Obviously, paths used below are not universal!
@@ -57,18 +56,13 @@ cat CLocus_list | parallel -j 32 "cat ./{}/{}*.fastaTEMP.consensus > {}.combined
 # clean up, final output, formatting
 for f in `cat CLocus_list`; do rm "$f"/ -fr; done
 perl /home/jrdupuis/Random_scripts/catfasta2phyml.pl -c -s ./*.combined.fasta > $out_name
+sed -i 's/\/\.//g' $out_name
+
+# make individual fastas 1-liners, and then use these to create a list of alignment lengths, for creating a partition file
+for f in ./*.combined.fasta; do sed -e 's/\(^>.*$\)/#\1#/' "$f" | tr -d "\r" | tr -d "\n" | sed -e 's/$/#/' | tr "#" "\n" | sed -e '/^$/d' > tmp && mv tmp "$f"; done
+for f in `cat CLocus_list`; do printf '%s' "$f" >>alignment_length ; printf '%s' ' ' >>alignment_length; awk '/^>/ {next} { seqlen = length($0); print seqlen}' "$f".combined.fasta | head -n 1 >>alignment_length; done
+# more clean up
 mkdir combined_fastas
 mv *.combined.fasta combined_fastas
-sed -i 's/\/\.//g' $out_name
+
 ```  
-
-#### Then...
-
-From the single CLocus fasta files, I like to use something like [Johan Nylander](https://github.com/nylander)'s [catfasta2phyml.pl](https://github.com/nylander/catfasta2phyml) to create a concatenated alignment of all loci.  
-`perl /home/jrdupuis/Random_scripts/catfasta2phyml.pl -c -s ./*.combined.fasta > mach_3070SNPs.phy`
-
-#### other
-Make the combined.fasta files 1-liners:  
-`for f in ./*.combined.fasta; do sed -e 's/\(^>.*$\)/#\1#/' "$f" | tr -d "\r" | tr -d "\n" | sed -e 's/$/#/' | tr "#" "\n" | sed -e '/^$/d' > tmp && mv tmp "$f"; done`
-
-
