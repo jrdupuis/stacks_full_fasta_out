@@ -38,6 +38,11 @@ cat CLocus_list | parallel -j 32 "cat ./{}/{}*.fastaTEMP.consensus > {}.combined
 # clean up, final output, formatting
 for f in `cat CLocus_list`; do rm "$f"/ -fr; done
 perl /home/jrdupuis/Random_scripts/catfasta2phyml.pl -c -s ./*.combined.fasta > $out_name
+sed -i 's/\/\.//g' $out_name
+
+# make individual fastas 1-liners, and then use these to create a list of alignment lengths, for creating a partition file
+for f in ./*.combined.fasta; do sed -e 's/\(^>.*$\)/#\1#/' "$f" | tr -d "\r" | tr -d "\n" | sed -e 's/$/#/' | tr "#" "\n" | sed -e '/^$/d' > tmp && mv tmp "$f"; done
+for f in `cat CLocus_list`; do printf '%s' "$f" >>alignment_length ; printf '%s' ' ' >>alignment_length; awk '/^>/ {next} { seqlen = length($0); print seqlen}' "$f".combined.fasta | head -n 1 >>alignment_length; done
+# more clean up
 mkdir combined_fastas
 mv *.combined.fasta combined_fastas
-sed -i 's/\/\.//g' $out_name
